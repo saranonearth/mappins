@@ -3,7 +3,6 @@ import { withStyles } from '@material-ui/core/styles';
 import Context from '../context';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import MapIcon from '@material-ui/icons/Map';
 import Typography from '@material-ui/core/Typography';
 import Signout from '../components/Auth/Signout';
 
@@ -15,14 +14,13 @@ const Header = ({ classes }) => {
     <div className={classes.root}>
       <AppBar position='static'>
         <Toolbar>
-          <MapIcon className={classes.icon} />
           <div>
             <Typography
               component='h1'
               varient='h6'
               color='inherit'
               noWrap
-              style={{ fontWeight: '400', fontSize: '2em' }}
+              style={{ fontWeight: '900', fontSize: '2em' }}
             >
               {' '}
               Mappins{' '}

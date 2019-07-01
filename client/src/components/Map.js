@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import ReactMapGL from 'react-map-gl';
+import React, { useState, useContext, useEffect } from 'react';
+import ReactMapGL, { NavigationControl, Marker } from 'react-map-gl';
+import PlaceTwoTone from './PinIcon';
 import { withStyles } from '@material-ui/core/styles';
+import Context from '../context';
+import Blog from './Blog';
+
 // import Button from "@material-ui/core/Button";
 // import Typography from "@material-ui/core/Typography";
 // import DeleteIcon from "@material-ui/icons/DeleteTwoTone";
@@ -13,7 +17,10 @@ const initialViewport = {
 };
 
 const Map = ({ classes }) => {
+  const { state, dispatch } = useContext(Context);
   const [viewport, setViewport] = useState(initialViewport);
+  const [userPosition, setUserPosition] = useState(null);
+
   useEffect(() => {
     getLocation();
   }, [getLocation]);
@@ -25,18 +32,69 @@ const Map = ({ classes }) => {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude
       });
+      setUserPosition({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude
+      });
     });
   };
-  console.log(initialViewport);
+
+  //Map clickHandleFunction
+  const handleMapClick = ({ lngLat, leftButton }) => {
+    if (!leftButton) return;
+
+    if (!state.draft) {
+      dispatch({ type: 'CREATE_DRAFT' });
+    }
+
+    const [longitude, latitude] = lngLat;
+
+    dispatch({
+      type: 'UPDATE_DRAFT_LOCATION',
+      payload: { latitude, longitude }
+    });
+  };
   return (
     <>
       <div className={classes.root}>
         <ReactMapGL
-          mapStyle='mapbox://styles/mapbox/streets-v9'
+          mapStyle='mapbox://styles/mapbox/dark-v9'
           mapboxApiAccessToken='pk.eyJ1Ijoic2FyYW5vbmVhcnRoIiwiYSI6ImNqeGp5M3h3azIycmo0MG56YXptaXowYXQifQ.Ea8GhyxmTIdHhgUFYNi5TA'
           onViewportChange={newViewport => setViewport(newViewport)}
           {...viewport}
-        />
+          onClick={handleMapClick}
+        >
+          <div className={classes.navigationControl}>
+            <NavigationControl
+              onViewportChange={newViewport => setViewport(newViewport)}
+            />
+          </div>
+          {/* Pin for user location */}
+
+          {userPosition && (
+            <Marker
+              latitude={userPosition.latitude}
+              longitude={userPosition.longitude}
+              offsetLeft={40}
+              offsetTop={-37}
+            >
+              <PlaceTwoTone size={40} color='white' />
+            </Marker>
+          )}
+
+          {/* Draft pin */}
+
+          {state.draft && (
+            <Marker
+              latitude={state.draft.latitude}
+              longitude={state.draft.longitude}
+            >
+              <PlaceTwoTone size={40} color='grey' />
+            </Marker>
+          )}
+        </ReactMapGL>
+
+        <Blog />
       </div>
     </>
   );

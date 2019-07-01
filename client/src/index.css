@@ -14,3 +14,27 @@
     left: 50%;
     transform: translate(-50%,-2%);
 }
+
+.btn{
+    border: none;
+    padding: 10px 7px;
+    background: #333;
+    color: white;
+    margin: 5px;
+    border-radius: 3px;
+
+}
+
+.btn:hover{
+    background: #444444;
+}
+
+.btn-rmd{
+    border: none;
+    padding: 10px 7px;
+    background:#585858;
+    color: white;
+    margin: 5px;
+    border-radius: 3px;
+
+}

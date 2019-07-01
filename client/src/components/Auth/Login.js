@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import { ME_QUERY } from '../../graphql/queries';
 
 const Login = ({ classes }) => {
-  const { state, dispatch } = useContext(Context);
+  const { dispatch } = useContext(Context);
 
   const onSuccess = async googleUser => {
     const id_token = googleUser.getAuthResponse().id_token;
