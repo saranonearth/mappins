@@ -5,16 +5,60 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import AddAPhotoIcon from '@material-ui/icons/AddAPhotoTwoTone';
 import Context from '../../context';
+import axios from 'axios';
+import { CREATE_PIN_MUTATION } from '../../graphql/mutations';
+import { GraphQLClient } from 'graphql-request';
 
 const CreatePin = ({ classes }) => {
-  const { dispatch } = useContext(Context);
+  const { state, dispatch } = useContext(Context);
   const [title, setTitle] = useState('');
   const [image, setImage] = useState('');
   const [content, setContent] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const handleImageUpload = async () => {
+    const data = new FormData();
+    data.append('file', image);
+    data.append('upload_preset', 'mappins');
+    data.append('cloud_name', 'saranonearth');
+    const res = await axios.post(
+      'https://api.cloudinary.com/v1_1/saranonearth/image/upload',
+      data
+    );
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    console.log({ title, image, content });
+    return res.data.url;
+  };
+
+  const handleSubmit = async e => {
+    try {
+      e.preventDefault();
+
+      setSubmitting(true);
+
+      const id_token = window.gapi.auth2
+        .getAuthInstance()
+        .currentUser.get()
+        .getAuthResponse().id_token;
+
+      const url = await handleImageUpload();
+
+      const client = new GraphQLClient('http://localhost:4000/graphgl', {
+        headers: { authorization: id_token }
+      });
+
+      const { latitude, longitude } = state.draft;
+
+      const variables = { title, image: url, content, latitude, longitude };
+      const { createPin } = await client.request(
+        CREATE_PIN_MUTATION,
+        variables
+      );
+      console.log('PinCreated', createPin);
+
+      discardPin();
+    } catch (error) {
+      setSubmitting(false);
+      console.log('Error creating pin', error);
+    }
   };
 
   const discardPin = () => {
@@ -71,7 +115,7 @@ const CreatePin = ({ classes }) => {
       <div>
         <button
           onClick={e => handleSubmit(e)}
-          disabled={!title.trim() || !content.trim() || !image}
+          disabled={!title.trim() || !content.trim() || !image || submitting}
           type='submit'
           className='btn'
         >
