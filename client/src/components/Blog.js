@@ -4,17 +4,20 @@ import { withStyles } from '@material-ui/core/styles';
 import { Paper } from '@material-ui/core';
 import NoContent from './Pin/NoContent';
 import CreatePin from './Pin/CreatePin';
+import PinContent from './Pin/PinContent';
 
 const Blog = ({ classes }) => {
   const { state } = useContext(Context);
-  const { draft } = state;
+  const { draft, currentPin } = state;
 
   let BlogContent;
 
-  if (!draft) {
+  if (!draft && !currentPin) {
     BlogContent = NoContent;
   } else if (draft) {
     BlogContent = CreatePin;
+  } else if (!draft && currentPin) {
+    BlogContent = PinContent;
   }
 
   return (

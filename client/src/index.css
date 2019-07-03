@@ -7,6 +7,9 @@
     overflow-x: hidden;
     filter: grayscale(100%);
 }
+body {
+    font-family: Roboto;
+}
 
 .holder {
     position: absolute;

@@ -11,7 +11,9 @@ const Signout = ({ classes }) => {
     dispatch({
       type: 'SIGNOUT_USER'
     });
-    console.log('SIGNEDOUT USER');
+    dispatch({
+      type: 'DELETE_DRAFT'
+    });
   };
   return (
     <>

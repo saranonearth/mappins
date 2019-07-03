@@ -5,14 +5,14 @@ import { withStyles } from '@material-ui/core/styles';
 import Context from '../../context';
 import Typography from '@material-ui/core/Typography';
 import { ME_QUERY } from '../../graphql/queries';
-
+import { BASE_URL } from '../../client';
 const Login = ({ classes }) => {
   const { dispatch } = useContext(Context);
 
   const onSuccess = async googleUser => {
     const id_token = googleUser.getAuthResponse().id_token;
     try {
-      const client = new GraphQLClient('http://localhost:4000/graphgl', {
+      const client = new GraphQLClient(BASE_URL, {
         headers: { authorization: id_token }
       });
 
@@ -32,6 +32,10 @@ const Login = ({ classes }) => {
   };
   const onFailure = err => {
     console.log('Error logging in', err);
+    dispatch({
+      type: 'IS_LOGGED_IN',
+      payload: false
+    });
   };
 
   return (
